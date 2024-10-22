@@ -9,17 +9,23 @@
 
 #define ORIG_RAX 15 // Offset pour x86_64
 
+//interception de l'exec
+
 int main() {
     // Creation d'un fils avec la fonction fork
     pid_t child = fork();
     // Si le processus est le processus fils
     if (child == 0) {
+        // PROCESSUS PERE
+        
         // On indique que le processus fils demande à être tracé (PTRACE_TRACEME) par son processus parent (0).
         ptrace(PTRACE_TRACEME, 0, NULL, NULL);
         // execl remplace l'image du processus courant par un nouveau programme, ici ./fichier_ecriture.
         // le premier argument donne le chemin vers le programme, le second indique le nom tel qu'il apparait et NULL indique la fin des arguments.
         execl("/bin/ls", "ls", NULL);
     } else {
+        // PROCESSUS FILS
+
         int status;
         // waitpid attent que le processus fils change d'état. Cet état est sauvegardé dans status. Le 0 indique que le père attends n'import quel changement.
         waitpid(child, &status, 0);

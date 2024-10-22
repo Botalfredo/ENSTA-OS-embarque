@@ -9,13 +9,12 @@ void afficher_info_cpu() {
     // fopen renvoir un pointeur vers le fichier ainsi ouvert pour  y acceder via d'autres fonctions.
     FILE *f = fopen("/proc/cpuinfo", "r");
     if (!f) {
-        // Affichage d'une erreur et return pour indiqué au père l'échec de l'oppération
+        // Affichage d'une erreur si ouverture imposible
         perror("Erreur lors de l'ouverture de /proc/cpuinfo");
         return;
     }
     
-    // Declaration des tableau pour enregistrer les informations te le buffer (emplacement temporaire qui stockeras chaque lignes
-    // lues dans le fichier).
+    // Declaration des tableau pour enregistrer les informations lu dans le fichier
     char buffer[256];
     char modele[256] = "";
     char frequence[256] = "";

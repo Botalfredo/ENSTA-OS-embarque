@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+// Ecrivez un programme qui prend en paramètre un numéro de pid et qui affiche pour ce processus :
+// 
+// 1) Lire les PID -> ps aux ou top
+// 2) ./ex2 PID
 
 // Fonction pour lire le contenu d'un fichier et le retourner sous forme de chaîne
 void lire_fichier(const char *chemin, char *contenu, size_t taille_max) {

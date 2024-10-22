@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <bits/getopt_core.h>
 
 /*  Exemple: ./ex3 -p 6 -m -c   */
 
