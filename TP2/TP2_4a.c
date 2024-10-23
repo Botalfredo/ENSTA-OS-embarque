@@ -1,9 +1,3 @@
-// ---------------------------------------------------------------------
-// Fichier d'exemple pour le TP2 Question 4-a --> création des timers
-// VO par Christophe BLAESS
-// Adapté par Jalil Boukhobza
-// ---------------------------------------------------------------------
-
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,6 +5,7 @@
 #include <unistd.h>
 #include <sys/time.h>
 
+// ./TP2_4 1000 (temps en microseconde)
 
 static timer_t timer = (timer_t) 0;		// Identifiant de timer init à 0 (avec un cast de type timer)
 static int nb_mesures = 0;				// Compteur du nombre de fois ou le timer à expirer
@@ -72,7 +67,7 @@ int main(int argc, char * argv[]){		// argc = nb de param, argv = tableau conten
 	
 	// Attendre le dernier signal tant que les mesures n'ont pas atteint le total attendus
 	while (nb_mesures < nb_total_mesures)
-		pause();<
+		pause();
 		
 	// Afficher le nombre de mesures prises
     printf("Nombre de mesures prises: %d\n", nb_mesures);
