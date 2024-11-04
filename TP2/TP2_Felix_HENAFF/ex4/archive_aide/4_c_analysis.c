@@ -1,6 +1,11 @@
-// TP2_4c.c
-// Compilation: gcc TP2_4c.c -o 4_c_analysis -lm
-// Exécution: .TP2/TP2_4c.c < temsp.txt
+// ---------------------------------------------------------------------
+// calculer-statistiques.c
+// Fichier d'exemple du livre "Solutions Temps-Reel sous Linux"
+// (C) 2012-2015 - Christophe BLAESS
+// http://christophe.blaess.fr
+// ---------------------------------------------------------------------
+
+// usage: ./4_c_analysis < data_4_b.txt
 
 #include <math.h>
 #include <stdio.h>

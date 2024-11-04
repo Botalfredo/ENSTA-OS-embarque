@@ -1,6 +1,8 @@
-// TP2_4a.c
-
-// sudo .TP2/TP2_4 1000 (temps en microseconde)
+// ---------------------------------------------------------------------
+// Fichier d'exemple pour le TP2 Question 4-a --> création des timers
+// VO par Christophe BLAESS
+// Adapté par Jalil Boukhobza
+// ---------------------------------------------------------------------
 
 #include <signal.h>
 #include <stdio.h>
@@ -9,18 +11,21 @@
 #include <unistd.h>
 #include <sys/time.h>
 
+
 static timer_t timer = (timer_t) 0;		// Identifiant de timer init à 0 (avec un cast de type timer)
 static int nb_mesures = 0;				// Compteur du nombre de fois ou le timer à expirer
 static int nb_total_mesures = 0;		// Nb tot de musre a faire avant la fin
 
-void handler_signal(int inutilise){
+void handler_signal(int inutilise)
+{
 	// fonction à exécuter à chaque expiration du timer
 	// (handler_signal demande un argument pais ici pas besoin)
 	nb_mesures++;
 }
 
 
-int main(int argc, char * argv[]){		// argc = nb de param, argv = tableau contenant les param
+int main(int argc, char * argv[])		// argc = nb de param, argv = tableau contenant les param
+{
 	long int periode;
 	struct sigevent event;
 	struct itimerspec spec;

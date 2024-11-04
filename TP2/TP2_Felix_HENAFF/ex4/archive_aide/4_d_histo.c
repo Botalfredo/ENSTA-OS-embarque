@@ -1,7 +1,11 @@
-// TP2_4d.c
+// ---------------------------------------------------------------------
+// calculer-histogramme.c
+// Fichier d'exemple du livre "Solutions Temps-Reel sous Linux"
+// (C) 2012-2015 - Christophe BLAESS
+// http://christophe.blaess.fr
+// ---------------------------------------------------------------------
 
-// gcc TP2/TP2_4d.c -o TP2/TP2_4d
-// ./TP2/4_d_histo 100 500 15000 < TP2/temps.txt > TP2/histo_data.txt
+// ./4_d_histo 5000 0 1140 < data_4_b.txt > histo4_b.txt
 
 #include <stdio.h>
 #include <stdlib.h>

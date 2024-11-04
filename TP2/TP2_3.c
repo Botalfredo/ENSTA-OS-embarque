@@ -1,3 +1,7 @@
+// TP2_3.c
+
+//sudo ./TP2/TP2_3.c
+
 #include <stdio.h>
 #include <sched.h>
 #include <stdlib.h>

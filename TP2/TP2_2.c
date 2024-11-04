@@ -1,5 +1,7 @@
+// TP2_2.c
+
 // gcc -o TP2_2.c TP2_2.c
-// sudo ./change_priority
+// sudo ./TP2/TP2_2
 
 #include <stdio.h>
 #include <sys/time.h>
