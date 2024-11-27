@@ -1,0 +1,223 @@
+/* Compilation du Noyau */
+
+$ make linux-menuconfig
+
+$ make uboot-menuconfig
+
+$ make busybox-menuconfig
+
+$ make uclibc-menuconfig
+
+/* Utilisation des LEDs */
+
+$ make linux-menuconfig
+
+1) Il faudrait s’assurer que les bonnes options sont actives
+2) Il faudrait aussi s’assurer que les options du noyau sont complètement intégrées au noyau (non pas comme module « M »)
+
+suivre ses indication chatGPT:
+https://chatgpt.com/share/672b28b5-2c90-800e-86f6-c5db61088383
+
+Crée un script bash qui supprime et remplace des fichier sur la carte SD:
+
+#!/bin/bash
+
+# Chemins et variables à adapter
+SD_DEVICE="/dev/sdb1"  # Périphérique de la carte SD
+MOUNT_POINT="/mnt/sdcard"  # Point de montage
+BUILDROOT_OUTPUT_DIR="/path/to/buildroot/output/images"  # Répertoire des nouveaux fichiers
+
+# Vérifier si le périphérique existe
+if [ ! -b "$SD_DEVICE" ]; then
+    echo "Erreur : le périphérique $SD_DEVICE n'existe pas."
+    exit 1
+fi
+
+# Créer le point de montage s'il n'existe pas
+if [ ! -d "$MOUNT_POINT" ]; then
+    sudo mkdir -p "$MOUNT_POINT"
+fi
+
+# Monter la carte SD
+echo "Montage de la carte SD..."
+sudo mount "$SD_DEVICE" "$MOUNT_POINT"
+
+# Vérifier si le montage a réussi
+if ! mountpoint -q "$MOUNT_POINT"; then
+    echo "Erreur : impossible de monter la carte SD."
+    exit 1
+fi
+
+# Supprimer le contenu existant
+echo "Suppression du contenu existant sur la carte SD..."
+sudo rm -rf "$MOUNT_POINT"/*
+
+/* Copier les nouveaux fichiers */
+echo "Copie des nouveaux fichiers sur la carte SD..."
+sudo cp -r "$BUILDROOT_OUTPUT_DIR"/* "$MOUNT_POINT/"
+
+/* Synchroniser pour s'assurer que toutes les écritures sont terminées */
+echo "Synchronisation..."
+sync
+
+/* Démonter la carte SD */
+echo "Démontage de la carte SD..."
+sudo umount "$MOUNT_POINT"
+
+echo "Mise à jour de la carte SD terminée avec succès !"
+
+$ make
+
+puis flash sur la carte SD une fis le linux-menuconfig réalisé pour activé la modif des LEDs
+
+$ cd sys/class/leds
+
+$ ls -la
+
+$ cd usr0
+
+$ echo none > trigger
+
+$ echo 1 > brightness
+
+$ echo cpu > trigger
+
+$ echo heartbeat > trigger
+
+$ echo timer > trigger
+
+$ echo 200 > delay_on
+
+$ echo 800 > deflay off
+
+Voir ce qu'il se passe niveau LED
+
+$ echo 200 > delay_off
+
+$ echo 800 > deflay on
+
+/* Programme pour reproduire l'effet Knight Rider avec modulo 16 des LEDs*/
+
+& touch knight_rider.c
+& geany knight_rider.c &
+
+/* Contenu de knight_rider.c */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <time.h>
+
+/*
+$ gcc -o knight_rider knight_rider.c
+sudo ./knight_rider [freq LEDs en ms]
+*/
+
+void disable_trigger(int led_num);
+void set_led(int led_num, int value);
+void update_leds(int value);
+void signal_handler(int sig);s
+
+
+int main() {
+    // Désactiver les triggers par défaut et éteindre les LEDs
+    for (int i = 0; i < 4; i++) {
+        disable_trigger(i);
+        set_led(i, 0);
+    }
+
+    // Gestionnaire de signal
+    struct sigaction sa;
+    sa.sa_handler = signal_handler;
+    sa.sa_flags = 0; // SA_RESTART pour redémarrer les appels système interrompus
+    sigemptyset(&sa.sa_mask);
+    if (sigaction(SIGUSR1, &sa, NULL) == -1) {
+        perror("sigaction");
+        exit(EXIT_FAILURE);
+    }
+
+    while (1) {
+        pause();
+    }
+
+    return 0;
+}
+
+void signal_handler(int sig) {
+    counter = (counter + 1) % 16;
+    update_leds(counter);
+}
+
+void update_leds(int value) {
+    for (int i = 0; i < 4; i++) {
+        int bit = (value >> i) & 1;
+        set_led(i, bit);
+    }
+}
+
+void set_led(int led_num, int value) {
+    char path[50];
+    snprintf(path, sizeof(path), "/sys/class/leds/beaglebone:green:usr%d/brightness", led_num);
+    int fd = open(path, O_WRONLY);
+    if (fd < 0) {
+        perror("open brightness");
+        exit(EXIT_FAILURE);
+    }
+    char val = value ? '1' : '0';
+    if (write(fd, &val, 1) != 1) {
+        perror("write brightness");
+        exit(EXIT_FAILURE);
+    }
+    close(fd);
+}
+
+void disable_trigger(int led_num) {
+    char path[50];
+    snprintf(path, sizeof(path), "/sys/class/leds/beaglebone:green:usr%d/trigger", led_num);
+    int fd = open(path, O_WRONLY);
+    if (fd < 0) {
+        perror("open trigger");
+        exit(EXIT_FAILURE);
+    }
+    if (write(fd, "none", 4) != 4) {
+        perror("write trigger");
+        exit(EXIT_FAILURE);
+    }
+    close(fd);
+}
+
+/* Programme pour émetre des signaux */
+
+& touch sender.c
+& geany sender.c &
+
+/* Contenu de sender.c */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <signal.h>
+
+/*
+$ gcc -o sender sender.c
+./sender 500
+*/
+
+int main(int argc, char *argv[]) {
+    int delay = 1000; // Délai par défaut en millisecondes
+    if (argc > 1) {
+        delay = atoi(argv[1]);
+    }
+
+    pid_t counter_pid;
+    printf("Entrez le PID du processus compteur: ");
+    scanf("%d", &counter_pid);
+
+    while (1) {
+        kill(counter_pid, SIGUSR1);
+        usleep(delay * 1000);
+    }
+
+    return 0;
+}
